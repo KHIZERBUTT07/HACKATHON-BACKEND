@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       match: [
         /^\d{5}-\d{7}-\d{1}$/,
-        "Please provide a valid CNIC number in format: 12345-1234567-1"
+        "Please provide a valid CNIC number in format: 12345-1234567-1",
       ],
     },
     contactDetails: {
@@ -22,11 +22,12 @@ const userSchema = new mongoose.Schema(
         required: [true, "Phone number is required"],
         match: [
           /^(\+92|0)?[0-9]{10}$/,
-          "Please provide a valid phone number"
+          "Please provide a valid phone number",
         ],
       },
       alternatePhone: {
         type: String,
+        default: null, // Default value for optional fields
       },
     },
     address: {
@@ -44,6 +45,7 @@ const userSchema = new mongoose.Schema(
       },
       postalCode: {
         type: String,
+        match: [/^\d{5}$/, "Please provide a valid 5-digit postal code"],
       },
     },
     purpose: {
@@ -53,9 +55,13 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'admin'],
-      default: 'user'
-    }
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    password: {
+      type: String,
+      select: false, // Excludes password by default when querying
+    },
   },
   {
     timestamps: true,
@@ -73,12 +79,5 @@ userSchema.methods.toJSON = function () {
 };
 
 const User = mongoose.model("User", userSchema);
-
-// Ensure indexes are created correctly
-User.syncIndexes().then(() => {
-  console.log('Indexes synchronized');
-}).catch(err => {
-  console.error('Error synchronizing indexes:', err);
-});
 
 module.exports = User;
