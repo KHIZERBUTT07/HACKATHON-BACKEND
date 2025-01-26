@@ -1,0 +1,15 @@
+// file structure:
+
+backend/
+├── config/
+│   └── db.js            # MongoDB connection setup
+├── controllers/
+│   └── userController.js # Handles logic for routes
+├── models/
+│   └── User.js          # User schema
+├── routes/
+│   └── userRoutes.js    # User-related routes
+├── .env                 # Environment variables
+├── server.js            # Main server entry point
+├── package.json         # Node.js dependencies
+└── .gitignore           # Files to ignore in version control
