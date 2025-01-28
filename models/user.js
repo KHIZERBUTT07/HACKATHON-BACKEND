@@ -21,13 +21,13 @@ const userSchema = new mongoose.Schema(
         type: String,
         required: [true, "Phone number is required"],
         match: [
-          /^(\+92|0)?[0-9]{10}$/,
-          "Please provide a valid phone number",
+          /^(\+92|92|0)?3[0-9]{2}-?[0-9]{7}$/,
+          "Please provide a valid phone number in formats like +92 300 1234567 or 0300-1234567",
         ],
       },
       alternatePhone: {
         type: String,
-        default: null, // Default value for optional fields
+        default: null, // Optional alternate phone number
       },
     },
     address: {
@@ -60,18 +60,18 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      select: false, // Excludes password by default when querying
+      select: false, // Excludes password from default queries
     },
   },
   {
-    timestamps: true,
+    timestamps: true, // Adds createdAt and updatedAt fields automatically
   }
 );
 
-// Explicitly define indexes
+// Define unique index for CNIC
 userSchema.index({ cnic: 1 }, { unique: true });
 
-// Exclude password from being returned in API responses
+// Exclude sensitive data (like password) when converting to JSON
 userSchema.methods.toJSON = function () {
   const user = this.toObject();
   delete user.password;

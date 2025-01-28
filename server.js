@@ -2,31 +2,31 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const connectDB = require("./config/db.js");
+const connectDB = require("./config/db");
+
+// Import routes
+const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const tokenRoutes = require("./routes/tokenRoutes");
 const departmentRoutes = require("./routes/departmentRoutes");
-const authRoutes = require("./routes/authRoutes");
-const mongoose = require('mongoose');
-const User = require('./models/User');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
-app.use(bodyParser.json());
+app.use(cors()); // Enable Cross-Origin Resource Sharing
+app.use(bodyParser.json()); // Parse incoming JSON requests
 
 // Connect to MongoDB
 connectDB();
 
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/tokens", tokenRoutes);
-app.use("/api/departments", departmentRoutes);
+app.use("/api/auth", authRoutes); // Authentication routes
+app.use("/api/users", userRoutes); // User management routes
+app.use("/api/admin", adminRoutes); // Admin-specific routes
+app.use("/api/tokens", tokenRoutes); // Token management routes
+app.use("/api/departments", departmentRoutes); // Department management routes
 
 // Root Route
 app.get("/", (req, res) => {
@@ -38,8 +38,8 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
     success: false,
-    message: 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    message: "Internal Server Error",
+    error: process.env.NODE_ENV === "development" ? err.message : undefined,
   });
 });
 
@@ -47,21 +47,11 @@ app.use((err, req, res, next) => {
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: 'Route not found'
+    message: "Route not found",
   });
 });
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(async () => {
-    console.log('Connected to MongoDB');
-    
-    // Ensure indexes are properly set up
-    await User.syncIndexes();
-    
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err);
-  });
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

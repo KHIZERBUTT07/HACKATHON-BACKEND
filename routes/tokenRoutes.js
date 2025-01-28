@@ -8,7 +8,7 @@ const roleMiddleware = require('../middlewares/roleMiddleware');
 router.use(protect);
 
 // Routes for token management
-router.post('/generate', roleMiddleware(['receptionist', 'admin']), tokenController.generateToken); // Generate a new token
+router.post('/generate', roleMiddleware(['receptionist', 'admin', 'user']), tokenController.generateToken); // Generate a new token
 router.get('/:tokenId', roleMiddleware(['staff', 'receptionist', 'admin']), tokenController.getTokenDetails); // Get token details
 router.post('/update-status', roleMiddleware(['staff', 'admin']), tokenController.updateTokenStatus); // Update token status
 router.get('/', roleMiddleware(['admin']), tokenController.getAllTokens); // Get all tokens (admin only)
