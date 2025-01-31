@@ -11,6 +11,6 @@ router.use(protect);
 router.post('/generate', roleMiddleware(['receptionist', 'admin', 'user']), tokenController.generateToken); // Generate a new token
 router.get('/:tokenId', roleMiddleware(['staff', 'receptionist', 'admin']), tokenController.getTokenDetails); // Get token details
 router.post('/update-status', roleMiddleware(['staff', 'admin']), tokenController.updateTokenStatus); // Update token status
-router.get('/', roleMiddleware(['admin','user']), tokenController.getAllTokens); // Get all tokens (admin only)
+router.get('/', roleMiddleware(['admin','user','receptionist']), tokenController.getAllTokens); // Get all tokens (admin only)
 
 module.exports = router;
