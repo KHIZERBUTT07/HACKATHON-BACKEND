@@ -6,8 +6,8 @@ const { protect, authorize } = require('../middlewares/authMiddleware');
 // Protect all department routes
 router.use(protect);
 
-// Admin-only route to manage departments
-router.post('/manage', authorize(['admin']), departmentController.manageDepartment);
+// Admin and User can manage departments
+router.post('/manage', authorize(['admin', 'user']), departmentController.manageDepartment);
 
 // Get all departments (accessible by all authenticated users)
 router.get('/', departmentController.getAllDepartments);

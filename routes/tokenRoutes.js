@@ -1,16 +1,30 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const tokenController = require('../controllers/tokenController');
-const { protect } = require('../middlewares/authMiddleware');
-const roleMiddleware = require('../middlewares/roleMiddleware');
+const tokenController = require("../controllers/tokenController");
+const { protect } = require("../middlewares/authMiddleware");
+const roleMiddleware = require("../middlewares/roleMiddleware");
 
-// Protect all token routes with authentication
+// Protect all token routes
 router.use(protect);
 
-// Routes for token management
-router.post('/generate', roleMiddleware(['receptionist', 'admin', 'user']), tokenController.generateToken); // Generate a new token
-router.get('/:tokenId', roleMiddleware(['staff', 'receptionist', 'admin','department','user']), tokenController.getTokenDetails); // Get token details
-router.post('/update-status', roleMiddleware(['staff', 'admin']), tokenController.updateTokenStatus); // Update token status
-router.get('/', roleMiddleware(['admin','user','receptionist']), tokenController.getAllTokens); // Get all tokens (admin only)
+// ✅ Add route to fetch beneficiary by token number
+router.get("/token/:tokenNumber", tokenController.getBeneficiaryByToken);
+
+router.post(
+  "/generate",
+  roleMiddleware(["receptionist", "admin", "user"]),
+  tokenController.generateToken
+);
+router.get(
+  "/:tokenId",
+  roleMiddleware(["staff", "receptionist", "admin", "user"]),
+  tokenController.getTokenDetails
+);
+router.post(
+  "/update-status",
+  roleMiddleware(["staff", "admin", "user"]),
+  tokenController.updateTokenStatus
+);
+router.get("/", roleMiddleware(["admin", "user"]), tokenController.getAllTokens);
 
 module.exports = router;

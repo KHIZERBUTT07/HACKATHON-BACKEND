@@ -1,8 +1,8 @@
-const Token = require('../models/Token');
-const User = require('../models/User');
+const Token = require("../models/Token");
+const Department = require("../models/Department");
 
 /**
- * Generate a new token
+ * ✅ Generate a new token
  */
 const generateToken = async (req, res) => {
   try {
@@ -11,47 +11,60 @@ const generateToken = async (req, res) => {
     if (!beneficiary || !department || !purpose) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide all required fields.',
+        message: "Please provide all required fields.",
+      });
+    }
+
+    // Check if the department exists
+    const departmentExists = await Department.findById(department);
+    if (!departmentExists) {
+      return res.status(404).json({
+        success: false,
+        message: "Department not found.",
       });
     }
 
     // Generate a unique token number
-    const tokenNumber = `TKN${Date.now()}`;
+    const tokenNumber = `TKN-${Math.floor(1000 + Math.random() * 9000)}`;
 
+    // Create new token
     const newToken = await Token.create({
       tokenNumber,
       beneficiary,
       department,
       purpose,
+      status: "Pending",
     });
 
     res.status(201).json({
       success: true,
-      message: 'Token generated successfully.',
+      message: "Token generated successfully.",
       data: newToken,
     });
   } catch (error) {
-    console.error('Error generating token:', error);
+    console.error("Error generating token:", error);
     res.status(500).json({
       success: false,
-      message: 'Error generating token.',
+      message: "Error generating token.",
     });
   }
 };
 
 /**
- * Get token details
+ * ✅ Fetch Beneficiary By Token Number
  */
-const getTokenDetails = async (req, res) => {
+const getBeneficiaryByToken = async (req, res) => {
   try {
-    const token = await Token.findById(req.params.tokenId)
-      .populate('beneficiary', 'name cnic')
-      .populate('department', 'name');
+    console.log("Searching for token:", req.params.tokenNumber); // Debugging log
+
+    const token = await Token.findOne({ tokenNumber: req.params.tokenNumber })
+      .populate("beneficiary", "name cnic phone address")
+      .populate("department", "name");
 
     if (!token) {
       return res.status(404).json({
         success: false,
-        message: 'Token not found.',
+        message: "Token not found.",
       });
     }
 
@@ -60,16 +73,45 @@ const getTokenDetails = async (req, res) => {
       data: token,
     });
   } catch (error) {
-    console.error('Error fetching token details:', error);
+    console.error("Error fetching token details:", error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching token details.',
+      message: "Error fetching token details.",
     });
   }
 };
 
 /**
- * Update token status
+ * ✅ Get token details
+ */
+const getTokenDetails = async (req, res) => {
+  try {
+    const token = await Token.findById(req.params.tokenId)
+      .populate("beneficiary", "name cnic")
+      .populate("department", "name");
+
+    if (!token) {
+      return res.status(404).json({
+        success: false,
+        message: "Token not found.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: token,
+    });
+  } catch (error) {
+    console.error("Error fetching token details:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching token details.",
+    });
+  }
+};
+
+/**
+ * ✅ Update token status
  */
 const updateTokenStatus = async (req, res) => {
   try {
@@ -84,32 +126,32 @@ const updateTokenStatus = async (req, res) => {
     if (!token) {
       return res.status(404).json({
         success: false,
-        message: 'Token not found.',
+        message: "Token not found.",
       });
     }
 
     res.status(200).json({
       success: true,
-      message: 'Token status updated successfully.',
+      message: "Token status updated successfully.",
       data: token,
     });
   } catch (error) {
-    console.error('Error updating token status:', error);
+    console.error("Error updating token status:", error);
     res.status(500).json({
       success: false,
-      message: 'Error updating token status.',
+      message: "Error updating token status.",
     });
   }
 };
 
 /**
- * Get all tokens
+ * ✅ Get all tokens
  */
 const getAllTokens = async (req, res) => {
   try {
     const tokens = await Token.find()
-      .populate('beneficiary', 'name cnic')
-      .populate('department', 'name')
+      .populate("beneficiary", "name cnic")
+      .populate("department", "name")
       .sort({ issuedAt: -1 });
 
     res.status(200).json({
@@ -117,16 +159,18 @@ const getAllTokens = async (req, res) => {
       data: tokens,
     });
   } catch (error) {
-    console.error('Error fetching tokens:', error);
+    console.error("Error fetching tokens:", error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching tokens.',
+      message: "Error fetching tokens.",
     });
   }
 };
 
+// ✅ Ensure all functions are correctly exported
 module.exports = {
   generateToken,
+  getBeneficiaryByToken,
   getTokenDetails,
   updateTokenStatus,
   getAllTokens,
