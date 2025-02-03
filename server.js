@@ -4,7 +4,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const connectDB = require("./config/db");
 
-// Import routes
+// Import Routes
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoutes");
@@ -15,25 +15,25 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors()); // Enable Cross-Origin Resource Sharing
-app.use(bodyParser.json()); // Parse incoming JSON requests
+app.use(cors());
+app.use(bodyParser.json());
 
 // Connect to MongoDB
 connectDB();
 
 // Routes
-app.use("/api/auth", authRoutes); // Authentication routes
-app.use("/api/users", userRoutes); // User management routes
-app.use("/api/admin", adminRoutes); // Admin-specific routes
-app.use("/api/tokens", tokenRoutes); // Token management routes
-app.use("/api/departments", departmentRoutes); // Department management routes
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes); // ✅ Ensure this exists
+app.use("/api/admin", adminRoutes);
+app.use("/api/tokens", tokenRoutes);
+app.use("/api/departments", departmentRoutes);
 
 // Root Route
 app.get("/", (req, res) => {
   res.json({ message: "API is running..." });
 });
 
-// Error handling middleware
+// Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
@@ -51,7 +51,7 @@ app.use((req, res) => {
   });
 });
 
-// Start the server
+// Start Server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
